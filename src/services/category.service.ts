@@ -7,11 +7,13 @@ class CategoryService {
   }
 
   async getCategories() {
-    return Category.find();
+    return Category.find({
+      populate: "tasks",
+    });
   }
 
   async getCategory(id: string) {
-    return Category.findById(id);
+    return Category.findById(id).populate("tasks");
   }
 
   async updateCategory(id: string, name: string) {
