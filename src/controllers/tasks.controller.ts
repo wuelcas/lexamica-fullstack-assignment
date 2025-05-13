@@ -32,7 +32,12 @@ export default class TaskController {
   };
 
   private getTask = async (req: Request, res: Response) => {
-    const task = await this.taskService.getTask(req.params.id || "");
+    if (!req.params.id) {
+      res.status(StatusCodes.BAD_REQUEST).json({ error: "No id provided" });
+      return;
+    }
+
+    const task = await this.taskService.getTask(req.params.id);
     res.status(StatusCodes.OK).json(task);
   };
 
@@ -42,15 +47,29 @@ export default class TaskController {
       res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
       return;
     }
-    const task = await this.taskService.updateTask(
-      req.params.id || "",
-      data.name,
-    );
+
+    if (!req.params.id) {
+      res.status(StatusCodes.BAD_REQUEST).json({ error: "No id provided" });
+      return;
+    }
+
+    const task = await this.taskService.updateTask(req.params.id, data.name);
     res.status(StatusCodes.OK).json(task);
   };
 
   private deleteTask = async (req: Request, res: Response) => {
-    const task = await this.taskService.deleteTask(req.params.id || "");
+    if (!req.params.id) {
+      res.status(StatusCodes.BAD_REQUEST).json({ error: "No id provided" });
+      return;
+    }
+
+    const task = await this.taskService.deleteTask(req.params.id);
+
+    if (!task) {
+      res.status(StatusCodes.NOT_FOUND).json({ error: "Task not found" });
+      return;
+    }
+
     res.status(StatusCodes.OK).json(task);
   };
 }

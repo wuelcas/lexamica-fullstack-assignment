@@ -32,9 +32,12 @@ export default class CategoryController {
   };
 
   private getCategory = async (req: Request, res: Response) => {
-    const category = await this.categoryService.getCategory(
-      req.params.id || "",
-    );
+    if (!req.params.id) {
+      res.status(StatusCodes.BAD_REQUEST).json({ error: "No id provided" });
+      return;
+    }
+
+    const category = await this.categoryService.getCategory(req.params.id);
     res.status(StatusCodes.OK).json(category);
   };
 
@@ -44,17 +47,26 @@ export default class CategoryController {
       res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
       return;
     }
+
+    if (!req.params.id) {
+      res.status(StatusCodes.BAD_REQUEST).json({ error: "No id provided" });
+      return;
+    }
+
     const category = await this.categoryService.updateCategory(
-      req.params.id || "",
+      req.params.id,
       data.name,
     );
     res.status(StatusCodes.OK).json(category);
   };
 
   private deleteCategory = async (req: Request, res: Response) => {
-    const category = await this.categoryService.deleteCategory(
-      req.params.id || "",
-    );
+    if (!req.params.id) {
+      res.status(StatusCodes.BAD_REQUEST).json({ error: "No id provided" });
+      return;
+    }
+
+    const category = await this.categoryService.deleteCategory(req.params.id);
     res.status(StatusCodes.OK).json(category);
   };
 }
