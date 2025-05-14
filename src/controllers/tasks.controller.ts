@@ -2,6 +2,8 @@ import { Router, type Request, type Response } from "express";
 import { taskSchema } from "../validation-schemas/task.schema";
 import TaskService from "../services/task.service";
 import { StatusCodes } from "http-status-codes";
+import formatZodErrors from "../utils/formatZodErrors";
+import to from "await-to-js";
 
 export default class TaskController {
   public router = Router();
@@ -18,55 +20,106 @@ export default class TaskController {
 
   private createTask = async (req: Request, res: Response) => {
     const { success, data, error } = taskSchema.safeParse(req.body);
+
     if (!success) {
-      res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Validation Error", details: formatZodErrors(error) });
       return;
     }
-    const task = await this.taskService.createTask(data.name);
+
+    const [creationError, task] = await to(
+      this.taskService.createTask(data.name),
+    );
+
+    if (creationError) {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: "Could not create task", details: creationError });
+      return;
+    }
+
     res.status(StatusCodes.CREATED).json(task);
   };
 
   private getTasks = async (req: Request, res: Response) => {
-    const tasks = await this.taskService.getTasks();
+    const [error, tasks] = await to(this.taskService.getTasks());
+
+    if (error) {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: "Could not get tasks", details: error });
+      return;
+    }
+
     res.status(StatusCodes.OK).json(tasks);
   };
 
   private getTask = async (req: Request, res: Response) => {
     if (!req.params.id) {
-      res.status(StatusCodes.BAD_REQUEST).json({ error: "No id provided" });
+      res.status(StatusCodes.BAD_REQUEST).json({ message: "No id provided" });
       return;
     }
 
-    const task = await this.taskService.getTask(req.params.id);
+    const [error, task] = await to(this.taskService.getTask(req.params.id));
+
+    if (error) {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: "Could not get task", details: error });
+    }
+
     res.status(StatusCodes.OK).json(task);
   };
 
   private updateTask = async (req: Request, res: Response) => {
     const { success, data, error } = taskSchema.safeParse(req.body);
+
     if (!success) {
-      res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Validation Error", details: formatZodErrors(error) });
       return;
     }
 
     if (!req.params.id) {
-      res.status(StatusCodes.BAD_REQUEST).json({ error: "No id provided" });
+      res.status(StatusCodes.BAD_REQUEST).json({ message: "No id provided" });
       return;
     }
 
-    const task = await this.taskService.updateTask(req.params.id, data.name);
+    const [updateError, task] = await to(
+      this.taskService.updateTask(req.params.id, data.name),
+    );
+
+    if (updateError) {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: "Could not update task", details: updateError });
+      return;
+    }
+
     res.status(StatusCodes.OK).json(task);
   };
 
   private deleteTask = async (req: Request, res: Response) => {
     if (!req.params.id) {
-      res.status(StatusCodes.BAD_REQUEST).json({ error: "No id provided" });
+      res.status(StatusCodes.BAD_REQUEST).json({ message: "No id provided" });
       return;
     }
 
-    const task = await this.taskService.deleteTask(req.params.id);
+    const [deleteError, task] = await to(
+      this.taskService.deleteTask(req.params.id),
+    );
+
+    if (deleteError) {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: "Could not delete task", details: deleteError });
+      return;
+    }
 
     if (!task) {
-      res.status(StatusCodes.NOT_FOUND).json({ error: "Task not found" });
+      res.status(StatusCodes.NOT_FOUND).json({ message: "Task not found" });
       return;
     }
 
