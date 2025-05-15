@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: "Lexaminca Fullstack Assignment"
+  title: "Lexamica Fullstack Assignment"
   version: 1.0.0
 paths:
   /categories:

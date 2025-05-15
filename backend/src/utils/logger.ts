@@ -4,7 +4,7 @@ const { combine, timestamp, json } = winston.format;
 
 const logger = winston.createLogger({
   format: combine(timestamp(), json()),
-  defaultMeta: { service: "lexaminca-backend" },
+  defaultMeta: { service: "lexamica-backend" },
   transports: [new winston.transports.Console()],
 });
 

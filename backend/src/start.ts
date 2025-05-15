@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 const start = async () => {
   try {
     await mongoose.connect(
-      process.env.MONGODB_URI || "mongodb://localhost:27017/lexaminca",
+      process.env.MONGODB_URI || "mongodb://localhost:27017/lexamica",
     );
     console.log("Connected to MongoDB");
   } catch (error) {
