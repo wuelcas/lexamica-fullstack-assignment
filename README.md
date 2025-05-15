@@ -1,0 +1,2 @@
+# Lexamica Fullstack Assignment
+
