@@ -3,7 +3,8 @@ import { categorySchema } from "../validation-schemas/category.schema";
 import CategoryService from "../services/category.service";
 import { StatusCodes } from "http-status-codes";
 import formatZodErrors from "../utils/formatZodErrors";
-import to from "await-to-js";
+import to from "../utils/await-to";
+import logger from "../utils/logger";
 
 export default class CategoryController {
   public router = Router();
@@ -40,12 +41,15 @@ export default class CategoryController {
   };
 
   private getCategories = async (req: Request, res: Response) => {
-    const [error, categories] = await to(this.categoryService.getCategories());
+    const [error, categories] = await to(
+      this.categoryService.getCategories(req.query),
+    );
 
     if (error) {
+      logger.error(error.message, error);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Could not get categories", details: error });
+        .json({ message: "Could not get categories" });
       return;
     }
 
@@ -63,9 +67,15 @@ export default class CategoryController {
     );
 
     if (error) {
+      logger.error(error.message, error);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Could not get category", details: error });
+        .json({ message: "Could not get category" });
+      return;
+    }
+
+    if (!category) {
+      res.status(StatusCodes.NOT_FOUND);
       return;
     }
 
@@ -91,9 +101,10 @@ export default class CategoryController {
     );
 
     if (updateError) {
+      logger.error(updateError.message, updateError);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Could not update category", details: error });
+        .json({ message: "Could not update category" });
       return;
     }
 
@@ -111,9 +122,10 @@ export default class CategoryController {
     );
 
     if (deleteError) {
+      logger.error(deleteError.message, deleteError);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Could not delete category", details: deleteError });
+        .json({ message: "Could not delete category" });
       return;
     }
 

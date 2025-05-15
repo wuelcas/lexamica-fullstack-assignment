@@ -6,6 +6,7 @@ const TaskSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Category",
     required: true,
+    index: true,
   },
   position: { type: Number, required: true },
 });

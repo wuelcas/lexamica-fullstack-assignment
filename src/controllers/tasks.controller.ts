@@ -3,7 +3,8 @@ import { taskSchema } from "../validation-schemas/task.schema";
 import TaskService from "../services/task.service";
 import { StatusCodes } from "http-status-codes";
 import formatZodErrors from "../utils/formatZodErrors";
-import to from "await-to-js";
+import to from "../utils/await-to";
+import logger from "../utils/logger";
 
 export default class TaskController {
   public router = Router();
@@ -31,9 +32,10 @@ export default class TaskController {
     const [creationError, task] = await to(this.taskService.createTask(data));
 
     if (creationError) {
+      logger.error(creationError.message, creationError);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Could not create task", details: creationError });
+        .json({ message: "Could not create task" });
       return;
     }
 
@@ -41,12 +43,13 @@ export default class TaskController {
   };
 
   private getTasks = async (req: Request, res: Response) => {
-    const [error, tasks] = await to(this.taskService.getTasks());
+    const [error, tasks] = await to(this.taskService.getTasks(req.query));
 
     if (error) {
+      logger.error(error.message, error);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Could not get tasks", details: error });
+        .json({ message: "Could not get tasks" });
       return;
     }
 
@@ -62,9 +65,11 @@ export default class TaskController {
     const [error, task] = await to(this.taskService.getTask(req.params.id));
 
     if (error) {
+      logger.error(error.message, error);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Could not get task", details: error });
+        .json({ message: "Could not get task" });
+      return;
     }
 
     res.status(StatusCodes.OK).json(task);
@@ -90,9 +95,10 @@ export default class TaskController {
     );
 
     if (updateError) {
+      logger.error(updateError.message, updateError);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Could not update task", details: updateError });
+        .json({ message: "Could not update task" });
       return;
     }
 
@@ -110,9 +116,10 @@ export default class TaskController {
     );
 
     if (deleteError) {
+      logger.error(deleteError.message, deleteError);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Could not delete task", details: deleteError });
+        .json({ message: "Could not delete task" });
       return;
     }
 

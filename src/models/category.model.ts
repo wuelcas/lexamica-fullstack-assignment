@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const CategorySchema = new Schema({
   name: { type: String, required: true },
-  tasks: [{ type: Schema.Types.ObjectId, ref: "Task" }],
+  position: { type: Number, required: true },
 });
 
 CategorySchema.set("toJSON", {
