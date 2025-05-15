@@ -7,7 +7,8 @@ import transformAgregateToJSON from "../utils/transformAgregateToJSON";
 class CategoryService {
   async createCategory(newCategory: CategorySchema) {
     const category = new Category(newCategory);
-    return category.save();
+    throw new Error("something bad happened");
+    // return category.save();
   }
 
   async getCategories(params: any) {

@@ -4,7 +4,6 @@ import CategoryService from "../services/category.service";
 import { StatusCodes } from "http-status-codes";
 import formatZodErrors from "../utils/formatZodErrors";
 import to from "../utils/await-to";
-import logger from "../utils/logger";
 
 export default class CategoryController {
   public router = Router();
@@ -32,9 +31,8 @@ export default class CategoryController {
     );
 
     if (createError) {
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Could not create category", details: createError });
+      req.statusMessage = "Could not create category";
+      throw createError;
     }
 
     res.status(StatusCodes.CREATED).json(category);
@@ -46,11 +44,8 @@ export default class CategoryController {
     );
 
     if (error) {
-      logger.error(error.message, error);
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Could not get categories" });
-      return;
+      res.json({ message: "Could not get categories" });
+      throw error;
     }
 
     res.status(StatusCodes.OK).json(categories);
@@ -67,11 +62,8 @@ export default class CategoryController {
     );
 
     if (error) {
-      logger.error(error.message, error);
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Could not get category" });
-      return;
+      req.statusMessage = "Could not get category";
+      throw error;
     }
 
     if (!category) {
@@ -101,11 +93,8 @@ export default class CategoryController {
     );
 
     if (updateError) {
-      logger.error(updateError.message, updateError);
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Could not update category" });
-      return;
+      req.statusMessage = "Could not update category";
+      throw updateError;
     }
 
     res.status(StatusCodes.OK).json(category);
@@ -122,11 +111,8 @@ export default class CategoryController {
     );
 
     if (deleteError) {
-      logger.error(deleteError.message, deleteError);
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Could not delete category" });
-      return;
+      req.statusMessage = "Could not delete category";
+      throw deleteError;
     }
 
     res.status(StatusCodes.OK).json(category);
