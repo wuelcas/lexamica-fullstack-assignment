@@ -2,6 +2,12 @@ import mongoose, { Schema } from "mongoose";
 
 const TaskSchema = new Schema({
   name: { type: String, required: true },
+  category: {
+    type: Schema.Types.ObjectId,
+    ref: "Category",
+    required: true,
+  },
+  position: { type: Number, required: true },
 });
 
 TaskSchema.set("toJSON", {

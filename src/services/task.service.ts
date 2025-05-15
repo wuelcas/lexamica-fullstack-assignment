@@ -1,21 +1,22 @@
 import Task from "../models/task.model";
+import type { TaskSchema } from "../validation-schemas/task.schema";
 
 class TaskService {
-  async createTask(name: string) {
-    const task = new Task({ name });
+  async createTask(newTask: TaskSchema) {
+    const task = new Task(newTask);
     return task.save();
   }
 
   async getTasks() {
-    return Task.find();
+    return Task.find().populate("category");
   }
 
   async getTask(id: string) {
-    return Task.findById(id);
+    return Task.findById(id).populate("category");
   }
 
-  async updateTask(id: string, name: string) {
-    return Task.findByIdAndUpdate(id, { name }, { new: true });
+  async updateTask(id: string, task: TaskSchema) {
+    return Task.findByIdAndUpdate(id, task, { new: true });
   }
 
   async deleteTask(id: string) {

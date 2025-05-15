@@ -28,9 +28,7 @@ export default class TaskController {
       return;
     }
 
-    const [creationError, task] = await to(
-      this.taskService.createTask(data.name),
-    );
+    const [creationError, task] = await to(this.taskService.createTask(data));
 
     if (creationError) {
       res
@@ -88,7 +86,7 @@ export default class TaskController {
     }
 
     const [updateError, task] = await to(
-      this.taskService.updateTask(req.params.id, data.name),
+      this.taskService.updateTask(req.params.id, data),
     );
 
     if (updateError) {

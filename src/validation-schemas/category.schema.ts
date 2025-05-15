@@ -4,3 +4,5 @@ export const categorySchema = z.object({
   name: z.string().min(1).max(255),
   tasks: z.array(z.string()).optional(),
 });
+
+export type CategorySchema = z.infer<typeof categorySchema>;

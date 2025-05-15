@@ -1,23 +1,22 @@
 import Category from "../models/category.model";
+import type { CategorySchema } from "../validation-schemas/category.schema";
 
 class CategoryService {
-  async createCategory(name: string) {
-    const category = new Category({ name });
+  async createCategory(newCategory: CategorySchema) {
+    const category = new Category(newCategory);
     return category.save();
   }
 
   async getCategories() {
-    return Category.find({
-      populate: "tasks",
-    });
+    return Category.find().populate("tasks");
   }
 
   async getCategory(id: string) {
     return Category.findById(id).populate("tasks");
   }
 
-  async updateCategory(id: string, name: string) {
-    return Category.findByIdAndUpdate(id, { name }, { new: true });
+  async updateCategory(id: string, category: CategorySchema) {
+    return Category.findByIdAndUpdate(id, category, { new: true });
   }
 
   async deleteCategory(id: string) {

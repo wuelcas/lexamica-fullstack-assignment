@@ -27,7 +27,7 @@ export default class CategoryController {
       return;
     }
     const [createError, category] = await to(
-      this.categoryService.createCategory(data.name),
+      this.categoryService.createCategory(data),
     );
 
     if (createError) {
@@ -87,7 +87,7 @@ export default class CategoryController {
     }
 
     const [updateError, category] = await to(
-      this.categoryService.updateCategory(req.params.id, data.name),
+      this.categoryService.updateCategory(req.params.id, data),
     );
 
     if (updateError) {
