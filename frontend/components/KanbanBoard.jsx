@@ -235,6 +235,7 @@ const KanbanBoard = () => {
 
   const onDragEnd = (event) => {
     const { active, over } = event;
+    setActiveId(null);
 
     const isMovingADifferentCategory =
       active.data.current.type === "category" &&
@@ -275,7 +276,6 @@ const KanbanBoard = () => {
       console.log(active, over);
       return;
     }
-    setActiveId(null);
   };
 
   return (
