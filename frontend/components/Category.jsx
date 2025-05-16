@@ -23,7 +23,6 @@ const Category = ({ category, isOverlay }) => {
         transform: transform
           ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
           : undefined,
-        height: "100%",
       }}
       className={isOverlay ? "opacity-50" : ""}
     >
