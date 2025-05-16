@@ -1,5 +1,4 @@
 import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 import Category from "./Category";
 import CreateCategory from "./CreateCategory";
 
@@ -58,15 +57,15 @@ const categories = [
 
 const KanbanBoard = () => {
   return (
-    <Row className="flex-nowrap overflow-auto">
+    <Row className="flex-nowrap overflow-auto px-2">
       {categories.map((category) => (
-        <Col xs={4} className="px-2">
+        <div className="px-2" style={{ width: "350px" }}>
           <Category key={category.id} category={category} />
-        </Col>
+        </div>
       ))}
-      <Col xs={4} className="px-2">
+      <div className="px-2" style={{ width: "350px" }}>
         <CreateCategory />
-      </Col>
+      </div>
     </Row>
   );
 };
