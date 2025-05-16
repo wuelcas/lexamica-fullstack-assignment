@@ -228,6 +228,51 @@ const KanbanBoard = () => {
     });
   };
 
+  const moveTaskToACategory = (active, over) => {
+    setCategories((items) => {
+      const activeTask = items
+        .find((item) => item.id === active.data.current.category)
+        .tasks.find((task) => task.id === active.id);
+
+      const newItems = items.map((category) => {
+        const isNewCategory = category.id === over.id;
+        const isOldCategory = category.id === active.data.current.category;
+
+        if (isNewCategory) {
+          const newTasks = category.tasks.map((task) => ({
+            ...task,
+            position: task.position + 1,
+          }));
+
+          newTasks.push({
+            ...activeTask,
+            position: 1,
+            category: category.id,
+          });
+
+          return {
+            ...category,
+            tasks: newTasks,
+          };
+        }
+
+        if (isOldCategory) {
+          const newTasks = category.tasks.filter(
+            (task) => task.id !== active.id
+          );
+          return {
+            ...category,
+            tasks: newTasks,
+          };
+        }
+
+        return category;
+      });
+
+      return newItems;
+    });
+  };
+
   const onDragStart = (event) => {
     const { active } = event;
     setActiveId(active.id);
@@ -254,8 +299,9 @@ const KanbanBoard = () => {
       active.id !== over.id &&
       active.data.current.category !== over.data.current.category;
 
-    const isMovingADifferentType =
-      active.data.current.type !== over.data.current.type;
+    const isMovingATaskToTheTopOfACategory =
+      active.data.current.type === "task" &&
+      over.data.current.type === "category";
 
     if (isMovingADifferentCategory) {
       moveCategory(active, over);
@@ -272,8 +318,8 @@ const KanbanBoard = () => {
       return;
     }
 
-    if (isMovingADifferentType) {
-      console.log(active, over);
+    if (isMovingATaskToTheTopOfACategory) {
+      moveTaskToACategory(active, over);
       return;
     }
   };
