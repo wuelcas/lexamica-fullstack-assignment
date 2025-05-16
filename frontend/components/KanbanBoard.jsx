@@ -1,72 +1,280 @@
 import Row from "react-bootstrap/Row";
 import Category from "./Category";
 import CreateCategory from "./CreateCategory";
+import { DndContext } from "@dnd-kit/core";
+import { SortableContext } from "@dnd-kit/sortable";
+import { horizontalListSortingStrategy } from "@dnd-kit/sortable";
+import { useState } from "react";
 
-const categories = [
+const initialCategories = [
   {
-    id: 1,
+    id: "category-1",
     name: "Category 1",
+    position: 1,
     tasks: [
       {
-        id: 1,
+        id: "task-1",
         name: "Task 1",
+        category: "category-1",
+        position: 1,
+      },
+      {
+        id: "task-20",
+        name: "Task 20",
+        category: "category-1",
+        position: 2,
       },
     ],
   },
   {
-    id: 1,
-    name: "Category 1",
+    id: "category-2",
+    name: "Category 2",
+    position: 2,
     tasks: [
       {
-        id: 1,
-        name: "Task 1",
+        id: "task-2",
+        name: "Task 2",
+        category: "category-2",
+        position: 1,
       },
     ],
   },
   {
-    id: 1,
-    name: "Category 1",
+    id: "category-3",
+    name: "Category 3",
+    position: 3,
     tasks: [
       {
-        id: 1,
-        name: "Task 1",
+        id: "task-3",
+        name: "Task 3",
+        category: "category-3",
+        position: 1,
       },
     ],
   },
   {
-    id: 1,
-    name: "Category 1",
+    id: "category-4",
+    name: "Category 4",
+    position: 4,
     tasks: [
       {
-        id: 1,
-        name: "Task 1",
+        id: "task-4",
+        name: "Task 4",
+        category: "category-4",
+        position: 1,
       },
     ],
   },
   {
-    id: 1,
-    name: "Category 1",
+    id: "category-5",
+    name: "Category 5",
+    position: 5,
     tasks: [
       {
-        id: 1,
-        name: "Task 1",
+        id: "task-5",
+        name: "Task 5",
+        category: "category-5",
+        position: 1,
       },
     ],
   },
 ];
 
 const KanbanBoard = () => {
+  const [categories, setCategories] = useState(initialCategories);
+
+  const moveCategory = (active, over) => {
+    setCategories((items) => {
+      const oldPosition = active.data.current.position;
+      const newPosition = over.data.current.position;
+
+      const movedToRight = newPosition > oldPosition;
+      const newCategories = items.map((category) => {
+        if (category.id === active.id) {
+          return {
+            ...category,
+            position: newPosition,
+          };
+        }
+
+        if (movedToRight && category.position <= newPosition) {
+          return {
+            ...category,
+            position: category.position - 1,
+          };
+        }
+
+        if (!movedToRight && category.position >= newPosition) {
+          return {
+            ...category,
+            position: category.position + 1,
+          };
+        }
+        return category;
+      });
+
+      return newCategories;
+    });
+  };
+
+  const moveTaskInSameCategory = (active, over) => {
+    const categoryTasks = [
+      ...categories.find((item) => item.id === active.data.current.category)
+        .tasks,
+    ];
+    const oldPosition = active.data.current.position;
+    const newPosition = over.data.current.position;
+    const movedDown = newPosition > oldPosition;
+
+    const newTasks = categoryTasks.map((task) => {
+      if (task.id === active.id) {
+        return {
+          ...task,
+          position: newPosition,
+        };
+      }
+
+      if (movedDown && task.position <= newPosition) {
+        return {
+          ...task,
+          position: task.position - 1,
+        };
+      }
+
+      if (!movedDown && task.position >= newPosition) {
+        return {
+          ...task,
+          position: task.position + 1,
+        };
+      }
+      return task;
+    });
+
+    const newCategories = [...categories];
+    newCategories.find(
+      (item) => item.id === active.data.current.category
+    ).tasks = newTasks;
+
+    setCategories(newCategories);
+  };
+
+  const moveTaskToADifferentCategory = (active, over) => {
+    console.log(active, over);
+    setCategories((items) => {
+      const activeTask = items
+        .find((item) => item.id === active.data.current.category)
+        .tasks.find((task) => task.id === active.id);
+
+      const newItems = items.map((category) => {
+        const isNewCategory = category.id === over.data.current.category;
+        const isOldCategory = category.id === active.data.current.category;
+
+        if (isNewCategory) {
+          const newPosition = over.data.current.position;
+          const newTasks = category.tasks.map((task) => {
+            if (task.position >= newPosition) {
+              return {
+                ...task,
+                position: task.position + 1,
+              };
+            }
+
+            return task;
+          });
+
+          newTasks.push({
+            ...activeTask,
+            position: newPosition,
+            category: over.data.current.category,
+          });
+
+          return {
+            ...category,
+            tasks: newTasks,
+          };
+        }
+
+        if (isOldCategory) {
+          const newTasks = category.tasks.filter(
+            (task) => task.id !== active.id
+          );
+          return {
+            ...category,
+            tasks: newTasks,
+          };
+        }
+
+        return category;
+      });
+
+      return newItems;
+    });
+  };
+
+  const onDragEnd = (event) => {
+    const { active, over } = event;
+
+    const isMovingADifferentCategory =
+      active.data.current.type === "category" &&
+      over.data.current.type === "category" &&
+      active.id !== over.id;
+
+    const isMovingATaskInTheSameCategory =
+      active.data.current.type === "task" &&
+      over.data.current.type === "task" &&
+      active.id !== over.id &&
+      active.data.current.category === over.data.current.category;
+
+    const isMovingATaskToADifferentCategory =
+      active.data.current.type === "task" &&
+      over.data.current.type === "task" &&
+      active.id !== over.id &&
+      active.data.current.category !== over.data.current.category;
+
+    const isMovingADifferentType =
+      active.data.current.type !== over.data.current.type;
+
+    if (isMovingADifferentCategory) {
+      moveCategory(active, over);
+      return;
+    }
+
+    if (isMovingATaskInTheSameCategory) {
+      moveTaskInSameCategory(active, over);
+      return;
+    }
+
+    if (isMovingATaskToADifferentCategory) {
+      moveTaskToADifferentCategory(active, over);
+      return;
+    }
+
+    if (isMovingADifferentType) {
+      return;
+    }
+  };
+
   return (
-    <Row className="flex-nowrap overflow-auto px-2">
-      {categories.map((category) => (
-        <div className="px-2" style={{ width: "350px" }}>
-          <Category key={category.id} category={category} />
-        </div>
-      ))}
-      <div className="px-2" style={{ width: "350px" }}>
-        <CreateCategory />
-      </div>
-    </Row>
+    <DndContext onDragEnd={onDragEnd}>
+      <SortableContext
+        items={categories}
+        strategy={horizontalListSortingStrategy}
+      >
+        <Row className="flex-nowrap overflow-auto px-2">
+          {categories
+            .sort((a, b) => a.position - b.position)
+            .map((category) => (
+              <div className="px-2" style={{ width: "350px" }}>
+                <Category key={category.id} category={category} />
+              </div>
+            ))}
+          <div className="px-2" style={{ width: "350px" }}>
+            <CreateCategory />
+          </div>
+        </Row>
+      </SortableContext>
+    </DndContext>
   );
 };
+
 export default KanbanBoard;
