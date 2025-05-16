@@ -5,7 +5,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { SortableContext } from "@dnd-kit/sortable";
 import { verticalSortingStrategy } from "@dnd-kit/sortable";
 
-const Category = ({ category }) => {
+const Category = ({ category, isOverlay }) => {
   const { attributes, listeners, setNodeRef, transform } = useSortable({
     id: category.id,
     data: {
@@ -23,7 +23,9 @@ const Category = ({ category }) => {
         transform: transform
           ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
           : undefined,
+        height: "100%",
       }}
+      className={isOverlay ? "opacity-50" : ""}
     >
       <Card.Header>
         <Card.Title>{category.name}</Card.Title>

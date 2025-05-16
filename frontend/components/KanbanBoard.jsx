@@ -1,10 +1,21 @@
 import Row from "react-bootstrap/Row";
 import Category from "./Category";
+import Task from "./Task";
 import CreateCategory from "./CreateCategory";
-import { DndContext } from "@dnd-kit/core";
+import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
-import { horizontalListSortingStrategy } from "@dnd-kit/sortable";
+import {
+  horizontalListSortingStrategy,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
 import { useState } from "react";
+import {
+  useSensor,
+  useSensors,
+  KeyboardSensor,
+  PointerSensor,
+  closestCorners,
+} from "@dnd-kit/core";
 
 const initialCategories = [
   {
@@ -82,6 +93,13 @@ const initialCategories = [
 
 const KanbanBoard = () => {
   const [categories, setCategories] = useState(initialCategories);
+  const [activeId, setActiveId] = useState(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const moveCategory = (active, over) => {
     setCategories((items) => {
@@ -211,6 +229,11 @@ const KanbanBoard = () => {
     });
   };
 
+  const onDragStart = (event) => {
+    const { active } = event;
+    setActiveId(active.id);
+  };
+
   const onDragEnd = (event) => {
     const { active, over } = event;
 
@@ -252,15 +275,21 @@ const KanbanBoard = () => {
     if (isMovingADifferentType) {
       return;
     }
+    setActiveId(null);
   };
 
   return (
-    <DndContext onDragEnd={onDragEnd}>
-      <SortableContext
-        items={categories}
-        strategy={horizontalListSortingStrategy}
-      >
-        <Row className="flex-nowrap overflow-auto px-2">
+    <DndContext
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      sensors={sensors}
+      collisionDetection={closestCorners}
+    >
+      <Row className="flex-nowrap overflow-auto px-2">
+        <SortableContext
+          items={categories}
+          strategy={horizontalListSortingStrategy}
+        >
           {categories
             .sort((a, b) => a.position - b.position)
             .map((category) => (
@@ -268,13 +297,32 @@ const KanbanBoard = () => {
                 <Category key={category.id} category={category} />
               </div>
             ))}
-          <div className="px-2" style={{ width: "350px" }}>
-            <CreateCategory />
-          </div>
-        </Row>
-      </SortableContext>
+        </SortableContext>
+        <div className="px-2" style={{ width: "350px" }}>
+          <CreateCategory />
+        </div>
+      </Row>
+      <DragOverlay>
+        {activeId
+          ? categories.find((category) => category.id === activeId)
+            ? renderCategoryDragOverlay(activeId)
+            : renderTaskDragOverlay(activeId)
+          : null}
+      </DragOverlay>
     </DndContext>
   );
+
+  function renderCategoryDragOverlay(id) {
+    const category = categories.find((category) => category.id === id);
+    return <Category category={category} isOverlay />;
+  }
+
+  function renderTaskDragOverlay(id) {
+    const task = categories
+      .find((category) => category.tasks.some((task) => task.id === id))
+      .tasks.find((task) => task.id === id);
+    return <Task task={task} isOverlay />;
+  }
 };
 
 export default KanbanBoard;
