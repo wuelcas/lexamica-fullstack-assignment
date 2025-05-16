@@ -6,7 +6,7 @@ import { SortableContext } from "@dnd-kit/sortable";
 import { verticalSortingStrategy } from "@dnd-kit/sortable";
 
 const Category = ({ category, isOverlay }) => {
-  const { attributes, listeners, setNodeRef, transform } = useSortable({
+  const { listeners, setNodeRef, transform } = useSortable({
     id: category.id,
     data: {
       type: "category",
@@ -17,7 +17,6 @@ const Category = ({ category, isOverlay }) => {
   return (
     <Card
       ref={setNodeRef}
-      {...attributes}
       {...listeners}
       style={{
         transform: transform

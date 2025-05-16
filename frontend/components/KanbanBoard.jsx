@@ -177,7 +177,6 @@ const KanbanBoard = () => {
   };
 
   const moveTaskToADifferentCategory = (active, over) => {
-    console.log(active, over);
     setCategories((items) => {
       const activeTask = items
         .find((item) => item.id === active.data.current.category)
@@ -273,6 +272,7 @@ const KanbanBoard = () => {
     }
 
     if (isMovingADifferentType) {
+      console.log(active, over);
       return;
     }
     setActiveId(null);
@@ -293,8 +293,12 @@ const KanbanBoard = () => {
           {categories
             .sort((a, b) => a.position - b.position)
             .map((category) => (
-              <div className="px-2" style={{ width: "350px" }}>
-                <Category key={category.id} category={category} />
+              <div
+                key={category.id}
+                className="px-2"
+                style={{ width: "350px" }}
+              >
+                <Category category={category} />
               </div>
             ))}
         </SortableContext>

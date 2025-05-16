@@ -2,20 +2,18 @@ import Card from "react-bootstrap/Card";
 import { useSortable } from "@dnd-kit/sortable";
 
 const Task = ({ task, isOverlay }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useSortable({
-      id: task.id,
-      data: {
-        type: "task",
-        category: task.category,
-        position: task.position,
-      },
-    });
+  const { listeners, setNodeRef, transform } = useSortable({
+    id: task.id,
+    data: {
+      type: "task",
+      category: task.category,
+      position: task.position,
+    },
+  });
 
   return (
     <Card
       ref={setNodeRef}
-      {...attributes}
       {...listeners}
       style={{
         transform: transform
