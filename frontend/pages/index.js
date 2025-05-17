@@ -1,8 +1,18 @@
 import Head from "next/head";
 import Container from "react-bootstrap/Container";
 import KanbanBoard from "../components/KanbanBoard";
+import { getCategories } from "../api/categories";
 
-export default function Home() {
+export async function getServerSideProps() {
+  const categories = await getCategories();
+  return {
+    props: {
+      initialCategories: categories,
+    },
+  };
+}
+
+export default function Home({ initialCategories }) {
   return (
     <Container fluid className="py-5">
       <Head>
@@ -11,7 +21,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <KanbanBoard />
+      <KanbanBoard initialCategories={initialCategories} />
     </Container>
   );
 }

@@ -26,7 +26,7 @@ import {
 import { useAtom } from "jotai";
 import { getCategories } from "../api/categories";
 
-const KanbanBoard = () => {
+const KanbanBoard = ({ initialCategories }) => {
   const [categories, setCategories] = useAtom(categoriesAtom);
   const [, moveCategoryPosition] = useAtom(moveCategoryPositionAtom);
   const [, moveTaskPositionInSameCategory] = useAtom(
@@ -48,16 +48,12 @@ const KanbanBoard = () => {
   );
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      const categories = await getCategories();
-      setCategories(categories);
-    };
-    fetchCategories();
+    setCategories(initialCategories);
 
     return () => {
       setCategories([]);
     };
-  }, []);
+  }, [initialCategories]);
 
   const onDragStart = (event) => {
     const { active } = event;
