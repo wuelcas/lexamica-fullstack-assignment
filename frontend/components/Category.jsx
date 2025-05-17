@@ -37,7 +37,10 @@ const Category = ({ category, isOverlay }) => {
             .map((task) => (
               <Task key={task.id} task={task} />
             ))}
-          <CreateTask category={category.id} />
+          <CreateTask
+            category={category.id}
+            position={category.tasks.length + 1}
+          />
         </SortableContext>
       </Card.Body>
     </Card>

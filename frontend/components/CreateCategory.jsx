@@ -4,7 +4,7 @@ import Card from "react-bootstrap/Card";
 import { useAtom } from "jotai";
 import { createCategoryAtom } from "../stores/atoms";
 
-const CreateCategory = () => {
+const CreateCategory = ({ position }) => {
   const [, createCategory] = useAtom(createCategoryAtom);
   const [isCreateCategoryFormVisible, setIsCreateCategoryFormVisible] =
     useState(false);
@@ -22,6 +22,7 @@ const CreateCategory = () => {
     event.preventDefault();
     createCategory({
       name: event.target.categoryName.value,
+      position,
     });
     hideCreateCategoryForm();
   };

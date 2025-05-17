@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 import { createTaskAtom } from "../stores/atoms";
 
-const CreateTask = ({ category }) => {
+const CreateTask = ({ category, position }) => {
   const [, createTask] = useAtom(createTaskAtom);
   const [isCreateTaskFormVisible, setIsCreateTaskFormVisible] = useState(false);
 
@@ -21,6 +21,7 @@ const CreateTask = ({ category }) => {
     createTask({
       name: event.target.taskName.value,
       category,
+      position,
     });
     hideCreateTaskForm();
   };

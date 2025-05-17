@@ -8,7 +8,7 @@ import {
   horizontalListSortingStrategy,
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   useSensor,
   useSensors,
@@ -17,16 +17,17 @@ import {
   closestCorners,
 } from "@dnd-kit/core";
 import {
-  categoriesAtom,
   moveCategoryPositionAtom,
   moveTaskPositionInSameCategoryAtom,
   moveTaskToADifferentCategoryAtom,
   moveTaskAtTheTopOfACategoryAtom,
+  categoriesAtom,
 } from "../stores/atoms";
 import { useAtom } from "jotai";
+import { getCategories } from "../api/categories";
 
 const KanbanBoard = () => {
-  const [categories] = useAtom(categoriesAtom);
+  const [categories, setCategories] = useAtom(categoriesAtom);
   const [, moveCategoryPosition] = useAtom(moveCategoryPositionAtom);
   const [, moveTaskPositionInSameCategory] = useAtom(
     moveTaskPositionInSameCategoryAtom
@@ -45,6 +46,18 @@ const KanbanBoard = () => {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const categories = await getCategories();
+      setCategories(categories);
+    };
+    fetchCategories();
+
+    return () => {
+      setCategories([]);
+    };
+  }, []);
 
   const onDragStart = (event) => {
     const { active } = event;
@@ -122,7 +135,7 @@ const KanbanBoard = () => {
             ))}
         </SortableContext>
         <div className="px-2" style={{ width: "350px" }}>
-          <CreateCategory />
+          <CreateCategory position={categories.length + 1} />
         </div>
       </Row>
       <DragOverlay>
