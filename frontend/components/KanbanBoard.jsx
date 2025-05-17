@@ -24,7 +24,6 @@ import {
   categoriesAtom,
 } from "../stores/atoms";
 import { useAtom } from "jotai";
-import { getCategories } from "../api/categories";
 
 const KanbanBoard = ({ initialCategories }) => {
   const [categories, setCategories] = useAtom(categoriesAtom);
@@ -113,7 +112,7 @@ const KanbanBoard = ({ initialCategories }) => {
       sensors={sensors}
       collisionDetection={closestCorners}
     >
-      <Row className="flex-nowrap overflow-auto px-2">
+      <Row className="flex-nowrap overflow-auto px-2 h-100">
         <SortableContext
           items={categories}
           strategy={horizontalListSortingStrategy}

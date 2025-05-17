@@ -14,7 +14,7 @@ export async function getServerSideProps() {
 
 export default function Home({ initialCategories }) {
   return (
-    <Container fluid className="py-5">
+    <Container fluid className="py-5" style={{ height: "100vh" }}>
       <Head>
         <title>Lexamica Kanban Board</title>
         <meta name="description" content="Lexamica Fullstack Assignment" />
