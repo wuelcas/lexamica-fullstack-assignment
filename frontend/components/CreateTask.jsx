@@ -1,7 +1,10 @@
 import { Button, Form } from "react-bootstrap";
 import { useState } from "react";
+import { useAtom } from "jotai";
+import { createTaskAtom } from "../stores/atoms";
 
-const CreateTask = () => {
+const CreateTask = ({ category }) => {
+  const [, createTask] = useAtom(createTaskAtom);
   const [isCreateTaskFormVisible, setIsCreateTaskFormVisible] = useState(false);
 
   const showCreateTaskForm = () => {
@@ -9,7 +12,17 @@ const CreateTask = () => {
   };
 
   const hideCreateTaskForm = () => {
+    document.getElementById("taskName").value = "";
     setIsCreateTaskFormVisible(false);
+  };
+
+  const createNewTask = (event) => {
+    event.preventDefault();
+    createTask({
+      name: event.target.taskName.value,
+      category,
+    });
+    hideCreateTaskForm();
   };
 
   return (
@@ -20,16 +33,16 @@ const CreateTask = () => {
         </Button>
       )}
       {isCreateTaskFormVisible && (
-        <Form>
-          <Form.Group controlId="taskName" className="mb-2">
-            <Form.Control type="text" placeholder="Enter task name" />
+        <Form onSubmit={createNewTask}>
+          <Form.Group className="mb-2">
+            <Form.Control
+              type="text"
+              placeholder="Enter task name"
+              id="taskName"
+            />
           </Form.Group>
           <div className="d-flex gap-2">
-            <Button
-              variant="primary"
-              type="submit"
-              onClick={hideCreateTaskForm}
-            >
+            <Button variant="primary" type="submit">
               Create
             </Button>
             <Button variant="secondary" onClick={hideCreateTaskForm}>

@@ -17,7 +17,6 @@ const Category = ({ category, isOverlay }) => {
   return (
     <Card
       ref={setNodeRef}
-      {...listeners}
       style={{
         transform: transform
           ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
@@ -25,7 +24,7 @@ const Category = ({ category, isOverlay }) => {
       }}
       className={isOverlay ? "opacity-50" : ""}
     >
-      <Card.Header>
+      <Card.Header {...listeners}>
         <Card.Title>{category.name}</Card.Title>
       </Card.Header>
       <Card.Body>
@@ -38,7 +37,7 @@ const Category = ({ category, isOverlay }) => {
             .map((task) => (
               <Task key={task.id} task={task} />
             ))}
-          <CreateTask />
+          <CreateTask category={category.id} />
         </SortableContext>
       </Card.Body>
     </Card>

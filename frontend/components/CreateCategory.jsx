@@ -1,8 +1,11 @@
 import { Button, Form } from "react-bootstrap";
 import { useState } from "react";
 import Card from "react-bootstrap/Card";
+import { useAtom } from "jotai";
+import { createCategoryAtom } from "../stores/atoms";
 
 const CreateCategory = () => {
+  const [, createCategory] = useAtom(createCategoryAtom);
   const [isCreateCategoryFormVisible, setIsCreateCategoryFormVisible] =
     useState(false);
 
@@ -11,7 +14,16 @@ const CreateCategory = () => {
   };
 
   const hideCreateCategoryForm = () => {
+    document.getElementById("categoryName").value = "";
     setIsCreateCategoryFormVisible(false);
+  };
+
+  const createNewCategory = (event) => {
+    event.preventDefault();
+    createCategory({
+      name: event.target.categoryName.value,
+    });
+    hideCreateCategoryForm();
   };
 
   return (
@@ -23,16 +35,16 @@ const CreateCategory = () => {
           </Button>
         )}
         {isCreateCategoryFormVisible && (
-          <Form>
-            <Form.Group controlId="categoryName" className="mb-2">
-              <Form.Control type="text" placeholder="Enter category name" />
+          <Form onSubmit={createNewCategory}>
+            <Form.Group className="mb-2">
+              <Form.Control
+                type="text"
+                placeholder="Enter category name"
+                id="categoryName"
+              />
             </Form.Group>
             <div className="d-flex gap-2">
-              <Button
-                variant="primary"
-                type="submit"
-                onClick={hideCreateCategoryForm}
-              >
+              <Button variant="primary" type="submit">
                 Create
               </Button>
               <Button variant="secondary" onClick={hideCreateCategoryForm}>
