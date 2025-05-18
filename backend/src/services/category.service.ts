@@ -1,20 +1,19 @@
-import _ from "lodash";
-import Category from "../models/category.model";
-import type { CategorySchema } from "../validation-schemas/category.schema";
-import Task from "../models/task.model";
-import transformAgregateToJSON from "../utils/transformAgregateToJSON";
+import _ from 'lodash';
+import Category from '../models/category.model';
+import type { CategorySchema } from '../validation-schemas/category.schema';
+import Task from '../models/task.model';
+import transformAgregateToJSON from '../utils/transformAgregateToJSON';
 
 class CategoryService {
   async createCategory(newCategory: CategorySchema) {
     const category = new Category(newCategory);
-    throw new Error("something bad happened");
-    // return category.save();
+    return category.save();
   }
 
   async getCategories(params: any) {
     const total = await Category.aggregate([
       {
-        $count: "count",
+        $count: 'count',
       },
     ]);
 
@@ -22,19 +21,19 @@ class CategoryService {
       return { total: 0, categories: [] };
     }
 
-    let { count, page, sort = "position,asc" } = params;
+    let { count, page, sort = 'position,asc' } = params;
 
     count = _.isFinite(parseInt(count)) ? parseInt(count) : 100;
     page = _.isFinite(parseInt(page)) ? parseInt(page) : 1;
-    sort = sort.split(",");
+    sort = sort.split(',');
 
     const categories = await Category.aggregate([
       {
         $lookup: {
-          from: "tasks",
-          localField: "_id",
-          foreignField: "category",
-          as: "tasks",
+          from: 'tasks',
+          localField: '_id',
+          foreignField: 'category',
+          as: 'tasks',
           pipeline: [
             {
               $sort: {
@@ -52,7 +51,7 @@ class CategoryService {
       },
       {
         $sort: {
-          [sort[0]]: sort[1] === "asc" ? 1 : -1,
+          [sort[0]]: sort[1] === 'asc' ? 1 : -1,
         },
       },
     ]);
@@ -61,9 +60,7 @@ class CategoryService {
       total: total[0].count,
       categories: categories.map((category) => {
         category = transformAgregateToJSON(category);
-        category.tasks = category.tasks.map((task: any) =>
-          transformAgregateToJSON(task),
-        );
+        category.tasks = category.tasks.map((task: any) => transformAgregateToJSON(task));
         return category;
       }),
     };
