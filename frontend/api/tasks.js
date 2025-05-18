@@ -21,3 +21,10 @@ export const updateTask = async (task) => {
   });
   if (!res.ok) throw new Error("Failed to update task");
 };
+
+export const deleteTask = async (id) => {
+  const res = await fetch(`http://localhost:3001/tasks/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete task");
+};

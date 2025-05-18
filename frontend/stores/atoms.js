@@ -1,6 +1,10 @@
 import { atom } from "jotai";
-import { createCategory, updateCategory } from "../api/categories";
-import { createTask, updateTask } from "../api/tasks";
+import {
+  createCategory,
+  updateCategory,
+  deleteCategory,
+} from "../api/categories";
+import { createTask, updateTask, deleteTask } from "../api/tasks";
 
 export const categoriesAtom = atom([]);
 
@@ -170,6 +174,24 @@ export const createTaskAtom = atom(null, async (get, set, task) => {
   const newCategories = categories.map((item) =>
     item.id === newTask.category
       ? { ...item, tasks: [...item.tasks, newTask] }
+      : item
+  );
+  set(categoriesAtom, newCategories);
+});
+
+export const deleteCategoryAtom = atom(null, async (get, set, category) => {
+  await deleteCategory(category.id);
+  const categories = get(categoriesAtom);
+  const newCategories = categories.filter((item) => item.id !== category.id);
+  set(categoriesAtom, newCategories);
+});
+
+export const deleteTaskAtom = atom(null, async (get, set, task) => {
+  await deleteTask(task.id);
+  const categories = get(categoriesAtom);
+  const newCategories = categories.map((item) =>
+    item.id === task.category
+      ? { ...item, tasks: item.tasks.filter((item) => item.id !== task.id) }
       : item
   );
   set(categoriesAtom, newCategories);
