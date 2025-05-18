@@ -7,9 +7,15 @@ import { verticalSortingStrategy } from "@dnd-kit/sortable";
 import Button from "react-bootstrap/Button";
 import Image from "react-bootstrap/Image";
 import { useAtom } from "jotai";
-import { deleteCategoryAtom } from "../stores/atoms";
+import { deleteCategoryAtom, updateCategoryNameAtom } from "../stores/atoms";
+import { useState } from "react";
+import Form from "react-bootstrap/Form";
+import useClickAway from "../hooks/useClickAway";
 
 const Category = ({ category, isOverlay }) => {
+  const [, updateCategoryName] = useAtom(updateCategoryNameAtom);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [newName, setNewName] = useState(category.name);
   const [, deleteCategory] = useAtom(deleteCategoryAtom);
   const { listeners, setNodeRef, transform } = useSortable({
     id: category.id,
@@ -23,6 +29,31 @@ const Category = ({ category, isOverlay }) => {
     deleteCategory(category);
   };
 
+  const editCategoryNameHandler = (e) => {
+    e.preventDefault();
+    if (newName === category.name) {
+      setIsEditingName(false);
+      return;
+    }
+    updateCategoryName({
+      ...category,
+      name: newName,
+    });
+    setIsEditingName(false);
+  };
+
+  const ref = useClickAway(editCategoryNameHandler);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Escape") {
+      editCategoryNameHandler(e);
+    }
+  };
+
+  const openEditNameForm = () => {
+    setIsEditingName(true);
+  };
+
   return (
     <Card
       ref={setNodeRef}
@@ -34,7 +65,23 @@ const Category = ({ category, isOverlay }) => {
       className={isOverlay ? "opacity-50" : ""}
     >
       <Card.Header className="d-flex justify-content-between align-items-center">
-        <Card.Title>{category.name}</Card.Title>
+        {!isEditingName && (
+          <Button variant="light" onClick={openEditNameForm}>
+            <Card.Title>{category.name}</Card.Title>
+          </Button>
+        )}
+        {isEditingName && (
+          <Form onSubmit={editCategoryNameHandler}>
+            <Form.Control
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={handleKeyDown}
+              ref={ref}
+              autoFocus
+            />
+          </Form>
+        )}
         <div className="d-flex gap-2">
           <Button variant="light" onClick={deleteCategoryHandler}>
             <Image src="/icons/delete.svg" />

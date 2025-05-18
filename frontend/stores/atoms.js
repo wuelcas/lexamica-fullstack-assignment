@@ -196,3 +196,28 @@ export const deleteTaskAtom = atom(null, async (get, set, task) => {
   );
   set(categoriesAtom, newCategories);
 });
+
+export const updateCategoryNameAtom = atom(null, async (get, set, category) => {
+  await updateCategory(category);
+  const categories = get(categoriesAtom);
+  const newCategories = categories.map((item) =>
+    item.id === category.id ? { ...item, name: category.name } : item
+  );
+  set(categoriesAtom, newCategories);
+});
+
+export const updateTaskNameAtom = atom(null, async (get, set, task) => {
+  await updateTask(task);
+  const categories = get(categoriesAtom);
+  const newCategories = categories.map((item) =>
+    item.id === task.category
+      ? {
+          ...item,
+          tasks: item.tasks.map((item) =>
+            item.id === task.id ? { ...item, name: task.name } : item
+          ),
+        }
+      : item
+  );
+  set(categoriesAtom, newCategories);
+});
