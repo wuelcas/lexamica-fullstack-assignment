@@ -12,19 +12,27 @@ const CreateTask = ({ category, position }) => {
   };
 
   const hideCreateTaskForm = () => {
-    document.getElementById("taskName").value = "";
+    document.getElementById(`taskName-${category.id}`).value = "";
     setIsCreateTaskFormVisible(false);
   };
 
   const createNewTask = (event) => {
     event.preventDefault();
     createTask({
-      name: event.target.taskName.value,
+      name: event.target[`taskName-${category.id}`].value,
       category,
       position,
     });
     hideCreateTaskForm();
   };
+
+  if (isCreateTaskFormVisible) {
+    setTimeout(() => {
+      document.getElementById(`taskName-${category.id}`).scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 10);
+  }
 
   return (
     <div>
@@ -39,7 +47,8 @@ const CreateTask = ({ category, position }) => {
             <Form.Control
               type="text"
               placeholder="Enter task name"
-              id="taskName"
+              id={`taskName-${category.id}`}
+              autoFocus
             />
           </Form.Group>
           <div className="d-flex gap-2">

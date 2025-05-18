@@ -61,6 +61,7 @@ const Category = ({ category, isOverlay }) => {
         transform: transform
           ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
           : undefined,
+        maxHeight: "80vh",
       }}
       className={isOverlay ? "opacity-50" : ""}
     >
@@ -93,7 +94,7 @@ const Category = ({ category, isOverlay }) => {
           />
         </div>
       </Card.Header>
-      <Card.Body>
+      <Card.Body style={{ overflowY: "auto" }}>
         <SortableContext
           items={category.tasks}
           strategy={verticalSortingStrategy}
