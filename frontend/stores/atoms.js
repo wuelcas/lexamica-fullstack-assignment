@@ -120,7 +120,14 @@ export const moveTaskToADifferentCategoryAtom = atom(
         return { ...category, tasks: newTasks };
       }
       if (isOldCategory) {
-        const newTasks = category.tasks.filter((task) => task.id !== active.id);
+        const newTasks = category.tasks
+          .filter((task) => task.id !== active.id)
+          .map((task) => {
+            if (task.position >= oldPosition) {
+              return { ...task, position: task.position - 1 };
+            }
+            return task;
+          });
         return { ...category, tasks: newTasks };
       }
       return category;
