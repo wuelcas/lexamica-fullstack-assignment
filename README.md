@@ -30,8 +30,8 @@ The API documentation is in the `backend/openapi.yaml` file. I didn't have the t
 
 ### DB Schema
 
-[!IMPORTANT]
-I thought that part of the solution requested was to move Categories too. By the end I realized you didn't request that. That affected how I structured the DB since that's the first thing I did.
+> [!IMPORTANT]
+> I thought that part of the solution requested was to move Categories too. By the end I realized you didn't request that. That affected how I structured the DB since that's the first thing I did.
 
 I used two Collections, one for Categories and one for Tasks. I started researching about existing solutions for Kanban boards but quickly realized I was going to spend a lot of time understanding how they worked and how to implement them (I never thought about this but this is very complex problem for both UI and backend), so I decided to go with what I thought was a simple solution.
 
@@ -39,11 +39,11 @@ First I started with an array type of solution, where I would store the tasks re
 
 I ended up having to think how to mantain integrity of the position value between tasks and categories when the user moved them around which cause a lot of complexity in the code when updating the position in both backend and frontend. I think an array type of solution might have been simpler specially if you only needed to move tasks around.
 
-[!NOTE]
-I tried implementing session and transactions when updating and shifting positions for both Tasks and Categories but I kept having this weird error: `ClientSession cannot be serialized to BSON`. I couldn't fix it not even with AI. Even AI assistants kept telling me my code had no issues. It was taking me a long time so I decided to skip it.
+> [!NOTE]
+> I tried implementing session and transactions when updating and shifting positions for both Tasks and Categories but I kept having this weird error: `ClientSession cannot be serialized to BSON`. I couldn't fix it not even with AI. Even AI assistants kept telling me my code had no issues. It was taking me a long time so I decided to skip it.
 
-[!WARNING]
-I'm sure there are bugs when you move stuff around. Sorry.
+> [!WARNING]
+> I'm sure there are bugs when you move stuff around. Sorry.
 
 ### Backend code organization
 
@@ -56,8 +56,8 @@ The `utils` directory contains utility functions, the rest of the code are class
 
 ### Frontend code organization
 
-[!NOTE]
-I tried to use Next.js v12 as requested but the Next.js cli kept installing v15.
+> [!NOTE]
+> I tried to use Next.js v12 as requested but the Next.js cli kept installing v15.
 
 There's only one page in the app, the index page. The components are in the `components` directory, you'll find components to load the board, load categories and task, create new category and task.
 
@@ -105,5 +105,5 @@ With time I would have used [Vitest](https://vitest.dev/)  and [supertest](https
 - Implementing the bonus points. The one that would have taking me more time I guess it's the real time updates with WebSockets since I haven't used WebSockets and socket.io in long time.
 - Loading states and error handling in the frontend
 
-[!NOTE]
-If you run `npm run seed`, you'll see the tasks I did, the one that I was doing before calling it quits, the ones I didn't do and the one that I decided to put it in the Backlog category.
+> [!NOTE]
+> If you run `npm run seed`, you'll see the tasks I did, the one that I was doing before calling it quits, the ones I didn't do and the one that I decided to put it in the Backlog category.
