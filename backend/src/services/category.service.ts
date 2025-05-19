@@ -84,43 +84,49 @@ class CategoryService {
   }
 
   async updateCategory(id: string, category: CategorySchema) {
-    const session = await Category.startSession();
-    let updatedCategory = null;
-    try {
-      await session.withTransaction(async () => {
-        const oldCategory = await Category.findByIdAndUpdate(id, category, {
-          session,
-        });
+    const oldCategory = await Category.findById(id);
 
-        if (!oldCategory) {
-          updatedCategory = null;
-          await session.abortTransaction();
-          return;
-        }
-
-        if (oldCategory.position !== category.position) {
-          const categories = await Category.find(
-            { position: { $gte: category.position } },
-            null,
-            { session }
-          );
-
-          for (const cat of categories) {
-            cat.position += 1;
-            await cat.save({ session });
-          }
-        }
-
-        updatedCategory = await Category.findById(id, null, { session });
-      });
-    } finally {
-      session.endSession();
+    if (!oldCategory) {
+      return null;
     }
+
+    if (oldCategory.position !== category.position) {
+      await this.shiftCategories(oldCategory.position, category.position);
+    }
+
+    const updatedCategory = await Category.findByIdAndUpdate(id, category, {
+      new: true,
+    });
     return updatedCategory;
   }
 
   async deleteCategory(id: string) {
     return Category.findByIdAndDelete(id);
+  }
+
+  private async shiftCategories(oldPosition: number, newPosition: number) {
+    const movedUp = oldPosition < newPosition;
+    let categories = [];
+
+    if (movedUp) {
+      categories = await Category.find({
+        position: { $gte: oldPosition, $lte: newPosition },
+      });
+      for (const cat of categories) {
+        cat.position -= 1;
+        await cat.save();
+      }
+      return;
+    }
+
+    categories = await Category.find({
+      position: { $gte: newPosition, $lte: oldPosition },
+    });
+
+    for (const cat of categories) {
+      cat.position += 1;
+      await cat.save();
+    }
   }
 }
 
