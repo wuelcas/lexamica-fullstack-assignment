@@ -5,6 +5,7 @@ import {
   deleteCategory,
 } from "../api/categories";
 import { createTask, updateTask, deleteTask } from "../api/tasks";
+import inBetween from "../utils/inBetween";
 
 export const categoriesAtom = atom([]);
 
@@ -29,10 +30,16 @@ export const moveCategoryPositionAtom = atom(
       if (category.id === active.id) {
         return { ...category, position: newPosition };
       }
-      if (movedToRight && category.position <= newPosition) {
+      if (
+        movedToRight &&
+        inBetween(category.position, oldPosition, newPosition)
+      ) {
         return { ...category, position: category.position - 1 };
       }
-      if (!movedToRight && category.position >= newPosition) {
+      if (
+        !movedToRight &&
+        inBetween(category.position, newPosition, oldPosition)
+      ) {
         return { ...category, position: category.position + 1 };
       }
       return category;
@@ -63,10 +70,10 @@ export const moveTaskPositionInSameCategoryAtom = atom(
       if (task.id === active.id) {
         return { ...task, position: newPosition };
       }
-      if (movedDown && task.position <= newPosition) {
+      if (movedDown && inBetween(task.position, oldPosition, newPosition)) {
         return { ...task, position: task.position - 1 };
       }
-      if (!movedDown && task.position >= newPosition) {
+      if (!movedDown && inBetween(task.position, newPosition, oldPosition)) {
         return { ...task, position: task.position + 1 };
       }
       return task;
