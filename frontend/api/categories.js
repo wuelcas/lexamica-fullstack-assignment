@@ -1,38 +1,28 @@
+import { apiFetch } from "./apiClient";
 export const createCategory = async (category) => {
-  const res = await fetch("http://localhost:3001/categories", {
+  const data = await apiFetch("categories", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(category),
   });
-  if (!res.ok) throw new Error("Failed to create category");
-  const data = await res.json();
   return data;
 };
 
 export const updateCategory = async (category) => {
-  delete category.tasks;
-  const res = await fetch(`http://localhost:3001/categories/${category.id}`, {
+  const cat = { ...category };
+  delete cat.tasks;
+  await apiFetch(`categories/${cat.id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(category),
+    body: JSON.stringify(cat),
   });
-  if (!res.ok) throw new Error("Failed to update category");
 };
 
 export const getCategories = async () => {
-  const res = await fetch("http://localhost:3001/categories");
-  if (!res.ok) throw new Error("Failed to fetch categories");
-  const data = await res.json();
+  const data = await apiFetch("categories");
   return data.categories;
 };
 
 export const deleteCategory = async (id) => {
-  const res = await fetch(`http://localhost:3001/categories/${id}`, {
+  await apiFetch(`categories/${id}`, {
     method: "DELETE",
   });
-  if (!res.ok) throw new Error("Failed to delete category");
 };

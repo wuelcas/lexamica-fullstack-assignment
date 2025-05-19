@@ -1,30 +1,22 @@
+import { apiFetch } from "./apiClient";
+
 export const createTask = async (task) => {
-  const res = await fetch("http://localhost:3001/tasks", {
+  const data = await apiFetch("tasks", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(task),
   });
-  if (!res.ok) throw new Error("Failed to create task");
-  const data = await res.json();
   return data;
 };
 
 export const updateTask = async (task) => {
-  const res = await fetch(`http://localhost:3001/tasks/${task.id}`, {
+  await apiFetch(`tasks/${task.id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(task),
   });
-  if (!res.ok) throw new Error("Failed to update task");
 };
 
 export const deleteTask = async (id) => {
-  const res = await fetch(`http://localhost:3001/tasks/${id}`, {
+  await apiFetch(`tasks/${id}`, {
     method: "DELETE",
   });
-  if (!res.ok) throw new Error("Failed to delete task");
 };
