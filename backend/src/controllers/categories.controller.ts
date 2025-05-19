@@ -27,7 +27,7 @@ export default class CategoryController {
       return;
     }
     const [createError, category] = await to(
-      this.categoryService.createCategory(data),
+      this.categoryService.createCategory(data)
     );
 
     if (createError) {
@@ -40,7 +40,7 @@ export default class CategoryController {
 
   private getCategories = async (req: Request, res: Response) => {
     const [error, categories] = await to(
-      this.categoryService.getCategories(req.query),
+      this.categoryService.getCategories(req.query)
     );
 
     if (error) {
@@ -58,7 +58,7 @@ export default class CategoryController {
     }
 
     const [error, category] = await to(
-      this.categoryService.getCategory(req.params.id),
+      this.categoryService.getCategory(req.params.id)
     );
 
     if (error) {
@@ -89,10 +89,10 @@ export default class CategoryController {
     }
 
     const [updateError, category] = await to(
-      this.categoryService.updateCategory(req.params.id, data),
+      this.categoryService.updateCategory(req.params.id, data)
     );
 
-    if (updateError) {
+    if (updateError && !category) {
       req.statusMessage = "Could not update category";
       throw updateError;
     }
@@ -107,7 +107,7 @@ export default class CategoryController {
     }
 
     const [deleteError, category] = await to(
-      this.categoryService.deleteCategory(req.params.id),
+      this.categoryService.deleteCategory(req.params.id)
     );
 
     if (deleteError) {

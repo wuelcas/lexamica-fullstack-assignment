@@ -38,6 +38,42 @@ class TaskService {
   }
 
   async updateTask(id: string, task: TaskSchema) {
+    const oldTask = await Task.findById(id);
+
+    if (!oldTask) {
+      return null;
+    }
+
+    if (
+      oldTask.position !== task.position &&
+      oldTask.category.toString() !== task.category
+    ) {
+      const tasks = await Task.find({
+        position: { $gte: task.position },
+        category: task.category,
+      });
+
+      for (const task of tasks) {
+        task.position += 1;
+        await task.save();
+      }
+    }
+
+    if (
+      oldTask.position !== task.position &&
+      oldTask.category.toString() === task.category
+    ) {
+      const tasks = await Task.find({
+        position: { $gte: task.position },
+        category: oldTask.category.toString(),
+      });
+
+      for (const task of tasks) {
+        task.position += 1;
+        await task.save();
+      }
+    }
+
     return Task.findByIdAndUpdate(id, task, { new: true });
   }
 

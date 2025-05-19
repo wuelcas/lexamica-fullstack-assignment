@@ -81,7 +81,7 @@ export default class TaskController {
     }
 
     const [updateError, task] = await to(
-      this.taskService.updateTask(req.params.id, data),
+      this.taskService.updateTask(req.params.id, data)
     );
 
     if (updateError) {
@@ -99,7 +99,7 @@ export default class TaskController {
     }
 
     const [deleteError, task] = await to(
-      this.taskService.deleteTask(req.params.id),
+      this.taskService.deleteTask(req.params.id)
     );
 
     if (deleteError) {
