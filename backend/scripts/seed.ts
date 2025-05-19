@@ -1,3 +1,4 @@
+import "dotenv/config";
 import mongoose from "mongoose";
 import Category from "../src/models/category.model.js";
 import Task from "../src/models/task.model.js";
@@ -5,7 +6,7 @@ import logger from "../src/utils/logger.js";
 
 async function seed() {
   await mongoose.connect(
-    process.env.MONGO_URI || "mongodb://localhost:27017/lexamica"
+    process.env.MONGODB_URI || "mongodb://localhost:27017/lexamicssssa"
   );
 
   await Category.deleteMany({});
