@@ -11,7 +11,8 @@
     "test": "vitest run --coverage",
     "test:watch": "vitest run --coverage --watch",
     "lint": "tsc",
-    "build": "esbuild src/start.ts --bundle --platform=node --format=esm --outfile=dist/start.js --packages=external"
+    "build": "esbuild src/start.ts --bundle --platform=node --format=esm --outfile=dist/start.js --packages=external",
+    "seed": "node --loader ts-node/esm scripts/seed.ts"
   },
   "keywords": [],
   "author": "",
